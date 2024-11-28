@@ -1,12 +1,8 @@
-﻿using Microsoft.Extensions.Options;
-using MovieApp.Data;
+﻿using MovieApp.Data;
 using MovieApp.Models;
 using Newtonsoft.Json;
 using RestSharp;
-using System;
-using System.Globalization;
 using System.Net;
-using System.Net.Http.Headers;
 
 public class MovieService
 {
@@ -97,97 +93,12 @@ public class MovieService
     //}
     #endregion
 
-    //public async Task FetchAndStoreMoviesAsync()
-    //{
-    //    try
-    //    {
-    //        System.Net.ServicePointManager.SecurityProtocol =
-    //        SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
-
-    //        //var client = new HttpClient();
-    //        //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "YOUR_API_TOKEN");
-    //        //var response = await client.GetAsync("https://api.themoviedb.org/3/discover/movie");
-    //        //response.EnsureSuccessStatusCode();
-    //        //var content = await response.Content.ReadAsStringAsync();
-
-
-
-    //        var options = new RestClientOptions("https://api.themoviedb.org/3/discover/movie")
-    //        {
-    //            RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
-    //        };
-
-
-    //        var client = new RestClient(options);
-
-    //        // Configure the request with required parameters and headers.
-    //        var request = new RestRequest();
-    //        request.AddQueryParameter("include_adult", "false");
-    //        request.AddQueryParameter("include_video", "false");
-    //        request.AddQueryParameter("language", "en-US");
-    //        request.AddQueryParameter("page", "2");
-    //        request.AddQueryParameter("sort_by", "popularity.desc");
-    //        request.AddHeader("accept", "application/json");
-    //        request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2N2MxYWRjNGUxY2FkOWYyNDI5MmE2ODgyNzNjZGNhYSIsIm5iZiI6MTczMjgyMjA1Ny43NjcwMjc2LCJzdWIiOiI2NzQ4ODVlMDFkMGI1YjNmYjgzM2ZlNGEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.E5JpCEEgI5ZJV1R8YgUhwoCctfdRqEYeDi6qYzqwr1g");
-
-    //        // Execute the GET request asynchronously.
-    //        var response = await client.GetAsync(request);
-
-    //        // Check for null response and log.
-    //        if (response == null)
-    //        {
-    //            Console.WriteLine("No response from the server.");
-    //            return;
-    //        }
-
-    //        // Log any errors if the response is unsuccessful.
-    //        if (!response.IsSuccessful)
-    //        {
-    //            Console.WriteLine($"Error: {response.StatusCode} - {response.Content}");
-    //            return;
-    //        }
-
-    //        // Deserialize the response content into your MovieApiResponse object.
-    //        var movies = JsonConvert.DeserializeObject<MovieApiResponse>(response.Content);
-    //        if (movies?.Results == null)
-    //        {
-    //            Console.WriteLine("No movies found in the response.");
-    //            return;
-    //        }
-
-    //        // Add new movies to the database if they don't already exist.
-    //        foreach (var movie in movies.Results)
-    //        {
-    //            if (!_context.MovieTables.Any(m => m.Id == movie.Id))
-    //            {
-    //                _context.MovieTables.Add(new MovieTable
-    //                {
-    //                    Name = movie.Title,
-    //                    Year = (movie.ReleaseDate).Year,
-    //                    Overview = movie.Overview,
-    //                    Popularity = movie.Popularity
-    //                });
-    //            }
-    //        }
-
-    //        // Save changes to the database.
-    //        await _context.SaveChangesAsync();
-    //        Console.WriteLine("Movies successfully fetched and stored.");
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        // Log exceptions with detailed information.
-    //        Console.WriteLine($"Exception: {ex.Message}");
-    //        Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-    //    }
-    //}
-
     public async Task FetchAndStoreMoviesAsync()
     {
         try
         {
             int page = 2;
-            // Ensure secure connections for the API calls
+
             System.Net.ServicePointManager.SecurityProtocol =
                     SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
@@ -199,7 +110,6 @@ public class MovieService
 
             var client = new RestClient(options);
 
-            // Configure the request with required parameters and headers.
             var request = new RestRequest();
             request.AddQueryParameter("include_adult", "false");
             request.AddQueryParameter("include_video", "false");
@@ -211,21 +121,18 @@ public class MovieService
             request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2N2MxYWRjNGUxY2FkOWYyNDI5MmE2ODgyNzNjZGNhYSIsIm5iZiI6MTczMjgyMjA1Ny43NjcwMjc2LCJzdWIiOiI2NzQ4ODVlMDFkMGI1YjNmYjgzM2ZlNGEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.E5JpCEEgI5ZJV1R8YgUhwoCctfdRqEYeDi6qYzqwr1g");// Execute the GET request asynchronously
             var response = await client.GetAsync(request);
 
-            // Check for null response and log
             if (response == null)
             {
                 Console.WriteLine("No response from the server.");
                 return;
             }
 
-            // Log any errors if the response is unsuccessful
             if (!response.IsSuccessful)
             {
                 Console.WriteLine($"Error: {response.StatusCode} - {response.Content}");
                 return;
             }
 
-            // Deserialize the response content into your MovieApiResponse object
             var movies = JsonConvert.DeserializeObject<MovieApiResponse>(response.Content);
             if (movies?.Results == null)
             {
@@ -233,7 +140,6 @@ public class MovieService
                 return;
             }
 
-            // Add new movies to the database if they don't already exist
             foreach (var movie in movies.Results)
             {
                 if (!_context.MovieTables.Any(m => m.Id == movie.Id))
@@ -248,23 +154,20 @@ public class MovieService
                 }
             }
 
-            // Save changes to the database
             await _context.SaveChangesAsync();
+
             Console.WriteLine($"Page {page}: Movies successfully fetched and stored.");
         }
         catch (HttpRequestException httpEx)
         {
-            // Specific handling for HttpRequest exceptions
             Console.WriteLine($"HTTP Request Error: {httpEx.Message}");
         }
         catch (JsonException jsonEx)
         {
-            // Specific handling for JSON parsing issues
             Console.WriteLine($"JSON Parsing Error: {jsonEx.Message}");
         }
         catch (Exception ex)
         {
-            // Generic exception handling
             Console.WriteLine($"Exception: {ex.Message}");
             Console.WriteLine($"Stack Trace: {ex.StackTrace}");
         }
