@@ -21,11 +21,6 @@ builder.Services.AddScoped<MovieService>();
 
 var app = builder.Build();
 
-// Use Hangfire Dashboard
-app.UseHangfireDashboard();
-
-
-
 // Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
@@ -38,18 +33,27 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+// Use Hangfire Dashboard
+app.UseHangfireDashboard();
 
-app.Run();
-// creating for job
+// Register recurring job
 using (var scope = app.Services.CreateScope())
 {
+    var movieService = scope.ServiceProvider.GetRequiredService<MovieService>();
+
+    // Ensure the job runs for the first time synchronously during startup
+    await movieService.FetchAndStoreMoviesAsync();
+
     var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
     recurringJobManager.AddOrUpdate<MovieService>(
-        "fetch-movies", 
+        "fetch-movies",
         service => service.FetchAndStoreMoviesAsync(),
-        Cron.Hourly 
+        Cron.Hourly
     );
 }
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Movies}/{action=Index}/{id?}");
+
+app.Run();

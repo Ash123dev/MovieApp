@@ -11,7 +11,7 @@ using MovieApp.Data;
 namespace MovieApp.Migrations
 {
     [DbContext(typeof(MovieDbContext))]
-    [Migration("20241127171421_Initial")]
+    [Migration("20241128212615_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -24,7 +24,7 @@ namespace MovieApp.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MovieApp.Models.Movie", b =>
+            modelBuilder.Entity("MovieApp.Models.MovieTable", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -43,12 +43,13 @@ namespace MovieApp.Migrations
                     b.Property<double>("Popularity")
                         .HasColumnType("float");
 
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
+                    b.Property<string>("Year")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Movies");
+                    b.ToTable("MovieTables");
                 });
 #pragma warning restore 612, 618
         }

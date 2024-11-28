@@ -15,7 +15,7 @@ public class MoviesController : Controller
 	public async Task<IActionResult> Index(string search, int page = 1)
 	{
 		int pageSize = 5;
-		var query = _context.Movies.AsQueryable();
+		var query = _context.MovieTables.AsQueryable();
 
 		if (!string.IsNullOrEmpty(search))
 		{
